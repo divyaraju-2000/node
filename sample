@@ -1,0 +1,30 @@
+const fs = require('fs');
+const http = require('http');
+var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+var dateTime = date+time;
+var timeStamp = dateTime.split("-").join("").split(":").join("");
+console.log(timeStamp);
+
+  
+
+fs.rename("dateTime", timeStamp+".txt", function (err) {
+  if (err) {
+  console.log(err);
+  }else{
+  console.log('File Renamed.');
+  }
+});
+
+
+const server = http.createServer((req,res) =>{
+  if(req.url==='/users'){
+    var files = fs.readdirSync(__dirname);
+    console.log(files);
+   
+    res.write(files.toString());
+  }
+  res.end();
+})
+server.listen(3040);
