@@ -6,7 +6,7 @@ dotenv.config();
 console.log(process.env.mongo_url);
 // const express = requestuire('express')
 const app = express();
-const Port = 4000;
+const Port = process.env.PORT;
 
 const movies=[
 
