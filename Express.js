@@ -1,6 +1,7 @@
 import express from 'express'
 import {MongoClient} from 'mongodb'
 import dotenv from 'dotenv'
+import {moviesRouter} from './movies.js'
 
 dotenv.config();
 console.log(process.env.mongo_url);
@@ -73,50 +74,14 @@ const mongo_url =process.env.mongo_url;
     return client;
   }
 
-  const client = await createConnection();
+  export const client = await createConnection();
   
 
 app.get("/", function (request, response) {
   response.send("Hiiii");
 })
 
-app.get("/movies", async function (request, response) {
-  if(request.query.rating){
-    request.query.rating = +request.query.rating;
-  } 
-
-  const movie1 = await client.db("Movies").collection("movies").find(request.query).toArray();
-   
-  console.log(request.query);
-      response.send(movie1);
-
-})
-
-app.get("/movies/:id", async function (request, response) {
-  const { id } = request.params;
-  console.log(request.params, id);
-  // const movie = movies.filter(r=>r.id === id);
-  const movie = await client.db("Movies").collection("movies").findOne( {id: id} );
-   
-  movie ? response.send(movie) : response.send("Nil");
-  console.log(movie);
-})
-
-app.post("/create",  async function(request,response){
-  const data = request.body;
-  const result = await client.db("Movies").collection("movies").insertMany(data);
-  console.log(result);
-  response.send(result);
-  })
-
-app.put("/movies/:id", async function (request, response){
-  const { id } = request.params;
-  const data = request.body;
-
-  const update = await client.db("Movies").collection("movies").updateOne({ id:id},{$set : data});
-  console.log(update);
-  response.send(update);
-})
+app.use("/movies",moviesRouter)
 
 // app.get("/")
 app.listen(Port, () => console.log("Done"));
