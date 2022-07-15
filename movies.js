@@ -1,17 +1,18 @@
 import express from "express";
-import {client} from "./Express.js"
+import { getAllMovies, getMovieById, createMovie, updateMovieById, deleteMovieById } from "./Function.js";
 const router = express.Router();
+import {auth} from "./auth.js";
 
 
-router.get("/", async function (request, response) {
+router.get("/", auth,async function (request, response) {
     if(request.query.rating){
       request.query.rating = +request.query.rating;
     } 
   
-    const movie1 = await client.db("Movies").collection("movies").find(request.query).toArray();
+    const movie1 = await getAllMovies(request);
      
-    console.log(request.query);
-        response.send(movie1);
+    console.log(request.query)
+        response.send(movie1)
   
   })
   
@@ -19,7 +20,7 @@ router.get("/", async function (request, response) {
     const { id } = request.params;
     console.log(request.params, id);
     // const movie = movies.filter(r=>r.id === id);
-    const movie = await client.db("Movies").collection("movies").findOne( {id: id} );
+    const movie = await getMovieById(id);
      
     movie ? response.send(movie) : response.send("Nil");
     console.log(movie);
@@ -27,7 +28,8 @@ router.get("/", async function (request, response) {
   
   router.post("/",  async function(request,response){
     const data = request.body;
-    const result = await client.db("Movies").collection("movies").insertMany(data);
+    const result = await createMovie(data);
+
     console.log(result);
     response.send(result);
     })
@@ -36,9 +38,20 @@ router.get("/", async function (request, response) {
     const { id } = request.params;
     const data = request.body;
   
-    const update = await client.db("Movies").collection("movies").updateOne({ id:id},{$set : data});
+    const update = await updateMovieById(id, data);
+
     console.log(update);
     response.send(update);
   })
 
+  router.delete("/:id", async function(request, response){
+    const {id} = request.params;
+
+    const deletemovie = await deleteMovieById(id)
+
+                   response.send(deleteOne);
+           })
+
   export const moviesRouter = router;
+
+
